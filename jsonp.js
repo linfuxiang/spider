@@ -15,19 +15,13 @@ app.get('/', (req, res) => {
         } else {
             console.log("Res:" + res);
             if (params.query && params.query.callback) {
-                let str = params.query.callback + '(' + JSON.stringify(r) + ')';
+                let str = params.query.callback + '(' + JSON.stringify(r) + ')';    //jsonP
                 res.end(str);
             } else {
-                res.end(JSON.stringify(r));
+                res.end(JSON.stringify(r)); //普通请求
             }
         }
     })
-    // if (params.query && params.query.callback) {
-    //     let str = params.query.callback + '(' + JSON.stringify(data) + ')';
-    //     res.end(str);
-    // } else {
-    //     res.end(JSON.stringify(data));
-    // }
 })
 
 app.listen(port, () => {
