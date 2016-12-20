@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+</head>
+<body>
+	<input type="text" id="key">
+	<input type="text" id="value">
+	<button id="insert">插入</button>
+	<button id="delete">删除</button>
+	<script src="js/jquery.min.js"></script>
+	<script>
+		$('#insert').on('click', function(event) {
+			var key = $('#key').val();
+			var value = $('#value').val();
+			var data = {};
+			data[key] = value;
+			$.ajax({
+				method: 'post',
+				url: '/switchon',
+				data: data,
+				success: function(data){
+					console.log(data);
+				}
+			});
+		});
+		$('#delete').on('click', function(event) {
+			var key = $('#key').val();
+			var value = $('#value').val();
+			var data = {};
+			data[key] = value;
+			/*$.ajax({
+				method: 'post',
+				url: '/switchoff',
+				data: data,
+				success: function(data){
+					console.log(data);
+				}
+			});*/
+		});
+	</script>
+</body>
+</html>
