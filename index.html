@@ -1,43 +1,65 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-	<title></title>
+    <title></title>
+    <style>
+        th{
+            text-align: left;
+        }
+    </style>
 </head>
+
 <body>
-	<input type="text" id="key">
-	<input type="text" id="value">
-	<button id="insert">插入</button>
-	<button id="delete">删除</button>
-	<script src="js/jquery.min.js"></script>
-	<script>
-		$('#insert').on('click', function(event) {
-			var key = $('#key').val();
-			var value = $('#value').val();
-			var data = {};
-			data[key] = value;
-			$.ajax({
-				method: 'post',
-				url: '/switchon',
-				data: data,
-				success: function(data){
-					console.log(data);
-				}
-			});
-		});
-		$('#delete').on('click', function(event) {
-			var key = $('#key').val();
-			var value = $('#value').val();
-			var data = {};
-			data[key] = value;
-			/*$.ajax({
-				method: 'post',
-				url: '/switchoff',
-				data: data,
-				success: function(data){
-					console.log(data);
-				}
-			});*/
-		});
-	</script>
+    <input type="text" id="key">
+    <input type="text" id="value">
+    <button id="insert">插入</button>
+    <button id="delete">删除</button>
+    <table id="table">
+        <tr>
+            <th>城市</th>
+            <th>指数</th>
+            <th>状况</th>
+        </tr>
+    </table>
+    <script src="public/js/jquery.min.js"></script>
+    <script>
+    $('#insert').on('click', function(event) {
+        var key = $('#key').val();
+        var value = $('#value').val();
+        var data = {};
+        data[key] = value;
+        $.getJSON("http://superlfx.cn:10011?callback=?",
+            function(data) {
+                for (var i in data) {
+                    $('#table').append(
+                        '<tr>' +
+                        '<td>' + data[i].city + '</td>' +
+                        '<td>' + data[i].num + '</td>' +
+                        '<td>' + data[i].situ + '</td>' +
+                        '</tr>'
+                    );
+                }
+                // $('#result').val('My name is: ' + data.name);
+                console.log(data);
+            });
+    });
+
+    $('#delete').on('click', function(event) {
+        var key = $('#key').val();
+        var value = $('#value').val();
+        var data = {};
+        data[key] = value;
+        /*$.ajax({
+            method: 'post',
+            url: '/switchoff',
+            data: data,
+            success: function(data){
+                console.log(data);
+            }
+        });*/
+    });
+    </script>
 </body>
+
 </html>

@@ -13,7 +13,7 @@ let tS = new mongoose.Schema({
     situ: { type: String }
 });
 let today = new Date();
-let collectionName = 'spidertest-' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + (today.getDate());
+let collectionName = 'spidertest-' + today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '_' + today.getHours() + ':00';
 // let collectionName = 'spidertest-' + parseInt(Math.random()*100);
 // let user = 
 module.exports = mongoose.model(collectionName, tS);
