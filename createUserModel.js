@@ -11,11 +11,9 @@ let tS = new mongoose.Schema({
     pw: { type: String }
 });
 
-let createModel = function(collectionParams) {
+let createModel = function() {
     let collectionName = 'userList';
     return mongoose.model(collectionName, tS);
 }
-exports.model = createModel;
-// exports.model = mongoose.model(collectionName, tS);
-// exports.time = collectionName;
+exports.createModel = createModel;
 exports.connection = mongoose.connection;
