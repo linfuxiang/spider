@@ -45,7 +45,7 @@ app.get('/getData', (req, res) => {
     let aqi = aqiModel.createModel(params.query.reqCollection),
         area = params.query.reqArea;
     // let aqi = aqiModel.createModel(req.body.reqCollection),
-        // area = req.body.reqArea;
+    //     area = req.body.reqArea;
     aqi.find({ city: new RegExp('^' + area + '[\u4e00-\u9fa5]*$') }, { '_id': 0, '__v': 0 }).sort({ aqi: 1 }).exec(function(err, r) {
         if (err) {
             console.log("Error:" + err);
