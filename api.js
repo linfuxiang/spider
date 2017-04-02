@@ -128,6 +128,53 @@ app.get('/getData', (req, res) => {
     });
 });
 
+app.get('/getData2', (req, res) => {
+    let params = urllib.parse(req.url, true);
+    let area = params.query.reqArea,
+        time = JSON.parse(params.query.time);
+    // let aqi = aqiModel.createModel(params.query.reqCollection);
+    let startTime = new Date(time[0]),
+        startDate = startTime.getDate(),
+        endTime = new Date(time[1]),
+        di = (endTime - startTime)/86400000;
+    let pArr = [], rArr = [];
+    let dateFo = function(ti){
+        let t = new Date(ti);
+        return `${t.getFullYear()}-${t.getMonth()+1}-${t.getDate()}`;
+    };
+    for(let i = 0; i <= di; i++) {
+        pArr[i] = new Promise(function(resolve, reject) {
+            let dateStr = dateFo(startTime.setDate(startDate + i));
+            let aqi = aqiModel.createModel(dateStr + '_12:00');
+            aqi.find({ city: new RegExp('^' + area + '[\u4e00-\u9fa5]*$') }, { '_id': 0, '__v': 0 }).sort({ aqi: 1 }).exec((err, r) => {
+                if (err) {
+                    console.log("Error:" + err);
+                    reject(res.send({code:101}));
+                } else {
+                    if(r.length != 1) {
+                        // console.log(r.length);
+                        res.send({code:101});
+                    }
+                    let obj = Object.assign({}, r[0]._doc);
+                    obj.date = dateStr;
+                    rArr[i] = obj;
+                    if(i == 0) {
+                        resolve();
+                    } else {
+                        resolve(pArr[i-1]);
+                    }
+                }
+            });
+        });
+        if(i == di) {
+            pArr[i].then((d) => {
+                res.send({code: 200, res: rArr});
+                console.log(rArr);
+            })
+        }
+    }
+});
+
 app.post('/signup', (req, res) => {
     let params = urllib.parse(req.url, true);
     let user = userModel.createModel(),
@@ -252,9 +299,9 @@ app.post('/discussion', (req, res) => {
             }
         });
     } else {
-        dis.find({}, { '_id': 0, '__v': 0 }).exec((err, r) => {
+        dis.find({}, { '_id': 0, '__v': 0 }).sort({ timestamp: -1 }).exec((err, r) => {
             if(err) {
-                console.log("Error:" + err.code);
+                console.log("Error:" + err);
             } else {
                 res.end(JSON.stringify(r));
                 // console.log(r)
