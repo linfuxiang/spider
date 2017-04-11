@@ -140,22 +140,28 @@ app.get('/getData2', (req, res) => {
     let pArr = [], rArr = [];
     let dateFo = function(ti){
         let t = new Date(ti);
+        // console.log(t.getFullYear(),t.getMonth()+1, t.getDate())
         return `${t.getFullYear()}-${t.getMonth()+1}-${t.getDate()}`;
     };
     for(let i = 0; i <= di; i++) {
         pArr[i] = new Promise(function(resolve, reject) {
-            let dateStr = dateFo(startTime.setDate(startDate + i));
+            let ss = new Date(startTime);
+            let dateStr = dateFo(ss.setDate(startDate + i));
+            console.log(dateStr)
             let aqi = aqiModel.createModel(dateStr + '_12:00');
             aqi.find({ city: new RegExp('^' + area + '[\u4e00-\u9fa5]*$') }, { '_id': 0, '__v': 0 }).sort({ aqi: 1 }).exec((err, r) => {
                 if (err) {
                     console.log("Error:" + err);
                     reject(res.send({code:101}));
                 } else {
+                    // console.log(i, r)
                     if(r.length != 1) {
-                        // console.log(r.length);
+                        console.log(r.length);
                         res.send({code:101});
                     }
-                    let obj = Object.assign({}, r[0]._doc);
+
+                    // let obj = {};
+                    let obj = Object.assign({}, r);
                     obj.date = dateStr;
                     rArr[i] = obj;
                     if(i == 0) {
@@ -169,7 +175,7 @@ app.get('/getData2', (req, res) => {
         if(i == di) {
             pArr[i].then((d) => {
                 res.send({code: 200, res: rArr});
-                console.log(rArr);
+                // console.log(rArr);
             })
         }
     }
@@ -275,7 +281,8 @@ app.get('/getAllCity', (req, res) => {
 app.post('/discussion', (req, res) => {
     let dis = disModel.createModel();
     let params = req.body;
-    if(params.submit) {
+    console.log(params);
+    if(params.submit == false) {
         (new dis({
             user: params.user,
             area: params.area,
