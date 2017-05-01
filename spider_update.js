@@ -9,6 +9,26 @@ const superagent = charset(require('superagent'));
 const model = require('./createModel');
 const cheerio = require('cheerio');
 
+function getTimeStr(date) {
+    return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + '_' + date.getHours() + ':00';
+    // return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + '_' + '6' + ':00';
+    // return '2017-3-8_21:00';
+}
+
+let lastTwoMonthTime = new Date(new Date().setDate(new Date().getDate() - 60)), //60天前
+    lastTwoMonthTimeStr = getTimeStr(lastTwoMonthTime);
+let modelToDel = model.createModel(lastTwoMonthTimeStr);
+modelToDel.count({}).exec(function(err, r) {
+    console.log(r)
+    if (r >= 0) {
+        model.connection.collections['aqi-' + lastTwoMonthTimeStr].drop(function(err, r) {
+            console.log(err, r)
+        });
+        // modelToDel.remove({}).exec(function(err, r) {
+        //     console.log(r)
+        // });;
+    }
+});
 // 用 superagent 去抓取内容
 superagent.get('http://www.pm25.in/rank')
     // .charset('gbk')
@@ -22,7 +42,8 @@ superagent.get('http://www.pm25.in/rank')
         let modelLatest = model.createModel('latest');
         /* 初始化aqi-[date&time]表 */
         let today = new Date();
-        let collectionName = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '_' + today.getHours() + ':00';
+        // let collectionName = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate() + '_' + today.getHours() + ':00';
+        let collectionName = getTimeStr(today);
         let modelData = model.createModel(collectionName);
 
         let len = cityList.length,

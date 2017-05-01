@@ -132,6 +132,10 @@ app.get('/getData2', (req, res) => {
     let params = urllib.parse(req.url, true);
     let area = params.query.reqArea,
         time = JSON.parse(params.query.time);
+    if(!time) {
+        res.send({code:101});
+        return;
+    }
     // let aqi = aqiModel.createModel(params.query.reqCollection);
     let startTime = new Date(time[0]),
         startDate = startTime.getDate(),
@@ -282,7 +286,16 @@ app.post('/discussion', (req, res) => {
     let dis = disModel.createModel();
     let params = req.body;
     console.log(params);
-    if(params.submit == false) {
+    if(params.submit === 'false' || params.submit === false) {
+        dis.find({}, { '_id': 0, '__v': 0 }).sort({ timestamp: -1 }).exec((err, r) => {
+            if(err) {
+                console.log("Error:" + err);
+            } else {
+                res.end(JSON.stringify(r));
+                // console.log(r)
+            }
+        });
+    } else {
         (new dis({
             user: params.user,
             area: params.area,
@@ -303,15 +316,6 @@ app.post('/discussion', (req, res) => {
                     status: 200
                 };
                 res.send(JSON.stringify(output));
-            }
-        });
-    } else {
-        dis.find({}, { '_id': 0, '__v': 0 }).sort({ timestamp: -1 }).exec((err, r) => {
-            if(err) {
-                console.log("Error:" + err);
-            } else {
-                res.end(JSON.stringify(r));
-                // console.log(r)
             }
         });
     }
