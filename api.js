@@ -132,7 +132,8 @@ app.get('/getData2', (req, res) => {
     let params = urllib.parse(req.url, true);
     let area = params.query.reqArea,
         time = JSON.parse(params.query.time);
-    if(!time) {
+        console.log(area, time)
+    if(!time || !area) {
         res.send({code:101});
         return;
     }
